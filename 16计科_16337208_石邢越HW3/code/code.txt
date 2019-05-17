@@ -1,0 +1,106 @@
+#include <GL/glut.h>
+#include <Windows.h>
+#include <time.h>
+
+static int revolution = 0, rotation = 0;
+
+GLint winWidth = 800, winHeight = 800; //set the sizeo of window
+GLfloat x0 = 0.0, y0 = 5.0, z0 = 5.0; // set the origin point
+
+GLfloat xref = 0.0, yref = 0.0, zref = 0.0; //set the reference point(eye)
+GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0;
+
+GLfloat xwMin = -1.0, ywMin = -1.0, xwMax = 1.0, ywMax = 1.0;//设置裁剪窗口坐标范围
+
+GLfloat dnear = 1.5, dfar = 20.0;//设置远、近裁剪面深度范围
+
+void init(void) {
+	glClearColor(1.0, 1.0, 1.0, 0.0);//white background
+	glShadeModel(GL_FLAT); //选择平面明暗模式或光滑明暗模式
+}
+
+void display(void) {
+	glClear(GL_COLOR_BUFFER_BIT);
+	glPushMatrix();
+
+	glColor3f(1.0, 0.0, 0.0);
+	glutWireSphere(1,20,10);//the star
+
+
+	glRotatef(revolution, 0.0f, 1.0f, 0.0f);
+	glTranslated(2, 0, 0);//revolution
+	glRotatef(rotation, 0.0f, 1.0f, 0.0f);//rotation
+	glColor3f(0.0, 0.0, 1.0);
+	glutWireSphere(0.5, 10, 10);   //the planet
+
+	glPopMatrix();
+	glutSwapBuffers();
+	glFlush();
+}
+
+/*void displayStar() {
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 0.0, 0.0);
+	glutWireSphere(1,20,10);
+	glutSwapBuffers();
+	glFlush();
+}*/
+
+void reshapeFcn(GLint newWidth, GLint newHight) {
+	glViewport(0, 0, (GLsizei)newWidth, (GLsizei)newHight);  
+	glMatrixMode(GL_PROJECTION);  
+	glLoadIdentity();
+	gluPerspective(60, (GLfloat)newWidth / (GLfloat)newHight, 1.0, 20);  
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(x0, y0, z0, xref, yref, zref, Vx, Vy, Vz);
+}
+
+void idle() {
+	Sleep(100);
+	revolution = (revolution+10)%360;
+	rotation = (rotation + 10) % 360;
+	display();
+}
+
+void keyboard(unsigned char input,int, int){
+	int i = 36;
+	switch (input){
+	case 'd':
+		rotation = (rotation + 10) % 360;
+		glutPostRedisplay();
+		break;
+	case 'D':
+		rotation = (rotation - 10) % 360; 
+		glutPostRedisplay();
+		break;
+	case 'y':
+		revolution = (revolution + 10) % 360;
+		glutPostRedisplay();
+		break;
+	case 'Y':
+		revolution = (revolution - 10) % 360;  
+		glutPostRedisplay();
+		break;
+	case 'a':
+		while (i--)
+			idle();
+		break;
+	default:
+		break;
+	}
+}
+
+void main(int argc, char** argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowPosition(winWidth/2, winHeight/2);
+	glutInitWindowSize(winWidth, winHeight);
+	glutCreateWindow("Shi_Transform");
+	init();
+	glutDisplayFunc(display);
+	//glutIdleFunc(idle);
+	glutReshapeFunc(reshapeFcn);
+	glutKeyboardFunc(keyboard);
+	glutMainLoop();
+}
