@@ -1,0 +1,52 @@
+#include <GL/glut.h>
+
+GLint winWidth = 600, winHeight = 600; //set the sizeo of window
+GLfloat x0 = 5.0, y0 = 5.0, z0 = 5.0; // set the origin point
+
+GLfloat xref = 0.0, yref = 0.0, zref = 0.0; //set the reference point(eye)
+GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0; 
+
+GLfloat xwMin = -1.0, ywMin = -1.0, xwMax = 1.0, ywMax = 1.0;//设置裁剪窗口坐标范围
+
+GLfloat dnear = 1.5, dfar = 20.0;//设置远、近裁剪面深度范围
+
+void init(void){
+	glClearColor(1.0, 1.0, 1.0, 0.0);
+	gluLookAt(x0, y0, z0, xref, yref, zref, Vx, Vy, Vz); 
+
+	glMatrixMode(GL_MODELVIEW);
+	glScalef(2.0, 2.0, 2.0);
+	glRotatef(45.0, 0.0, 1.0, 1.0);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glFrustum(xwMin, xwMax, ywMin, ywMax, dnear, dfar);
+}
+
+void displayFcn(void){
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(0.8, 0.0, 1.0); // set the color of surface of the cube
+	glutSolidCube(1.0);//draw unit cube
+	glColor3f(0.0, 0.0, 1.0); 
+	glLineWidth(2.0); //width of line
+	glutWireCube(1.0);//draw the skeleton of  cube
+	glFlush();
+}
+
+void reshapeFcn(GLint newWidth, GLint newHeight){
+	glViewport(0, 0, newWidth, newHeight);
+	winWidth = newWidth;
+	winHeight = newHeight;
+}
+
+void main(int argc, char** argv){
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowPosition(100, 100);
+	glutInitWindowSize(winWidth, winHeight);
+	glutCreateWindow("Shi_Cube");
+	init();
+	glutDisplayFunc(displayFcn);
+	glutReshapeFunc(reshapeFcn);
+	glutMainLoop();
+}

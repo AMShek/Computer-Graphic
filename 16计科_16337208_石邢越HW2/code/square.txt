@@ -1,0 +1,18 @@
+#include <GL/glut.h>
+void Show()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glRectf(-0.5, -0.5, 0.5, 0.5);
+	glFlush();
+}
+int main(int argc, char *argv[])
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
+	glutInitWindowPosition(50, 50);
+	glutInitWindowSize(800, 800);
+	glutCreateWindow("Shi_Square");
+	glutDisplayFunc(Show);
+	glutMainLoop();
+	return 0;
+}
