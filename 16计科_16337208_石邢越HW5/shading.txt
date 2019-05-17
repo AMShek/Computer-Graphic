@@ -1,0 +1,85 @@
+// shading.cpp: 定义控制台应用程序的入口点。
+#include "stdafx.h"
+#include<stdarg.h>   
+#include<gl/glut.h>  
+#include<math.h>  
+#include<iostream>  
+ 
+
+void draw(void){
+	glutSolidTeapot(1.0);
+}
+
+void display(){
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	draw();
+	glFlush();
+}
+
+void reshape(GLsizei w, GLsizei h){
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if (w <= h)
+		glOrtho(-2.0, 2.0, -2.0*(GLfloat)h / (GLfloat)w,
+			2.0*(GLfloat)h / (GLfloat)w, -10.0, 10.0);
+	else
+		glOrtho(-2.0*(GLfloat)h / (GLfloat)w,
+			2.0*(GLfloat)h / (GLfloat)w, -2.0, 2.0, -10.0, 10.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+void setmaterial() {
+	float MatAmbient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	//前三个参数决定光的颜色，最后一个参数是强度
+	float MatDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float MatSpecular[] = { 0.1f, 0.1f, 0.0f, 1.0f };
+	float MatShininess = 100;
+	float black[] = { 0.0f,0.0f,0.0f,1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MatAmbient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MatDiffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, MatSpecular);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, MatShininess);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, black);
+}
+int main(int ac, char** av){
+	glutInit(&ac, av);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutCreateWindow("Shading");
+	glutInitWindowPosition(400, 400);
+	glutInitWindowSize(800, 800);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	setmaterial();
+	glShadeModel(GL_SMOOTH);
+  
+
+	GLfloat light_position[] = { 0.0f,1.0f, 0.0f,0.1f };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	//光的位置
+
+	GLfloat light_diffuse[] = { 1.0f, 0.0f, 1.0f, 0.0f};
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse); 
+	//漫反射光
+
+	GLfloat light_ambient[] = { 1.0f,1.0f,1.0f,1.0f };
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	//环境光
+
+	GLfloat light_specular[] = { 1.0f,1.0f,1.0f,1.0f};
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	//高光  
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
+	glDepthFunc(GL_LESS);
+	glEnable(GL_DEPTH_TEST);
+
+	glutDisplayFunc(&display);
+	glutReshapeFunc(&reshape);
+	glutMainLoop();
+	return 0;
+}
+
